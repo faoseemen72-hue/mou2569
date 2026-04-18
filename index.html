@@ -42,6 +42,12 @@
             position: fixed; inset: 0; background: white; z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="selection:bg-teal-100">
@@ -115,7 +121,7 @@
                 <!-- Main Chart -->
                 <div class="lg:col-span-2 card-modern p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-black text-slate-800">กราฟร้อยละผลงาน: <span id="chartKpiTitle" class="text-teal-600 text-sm">...</span></h3>
+                        <h3 class="font-black text-slate-800">กราฟร้อยละผลงาน: <span id="chartKpiTitle" class="text-teal-600 text-xs">...</span></h3>
                         <div class="flex gap-2">
                              <span class="inline-block w-3 h-3 bg-slate-900 rounded-sm"></span> <span class="text-[9px] font-bold">อำเภอ</span>
                              <span class="inline-block w-3 h-3 bg-teal-600 rounded-sm"></span> <span class="text-[9px] font-bold">รพ.สต.</span>
@@ -128,7 +134,7 @@
                 <div class="card-modern bg-slate-900 text-white p-6 overflow-hidden relative">
                     <div class="relative z-10 h-full flex flex-col">
                         <span class="bg-amber-500 text-slate-900 px-3 py-1 rounded-lg text-[10px] font-black uppercase self-start mb-4">เกณฑ์ประเมิน (G, H)</span>
-                        <h4 id="targetName" class="text-lg font-black leading-tight mb-6 line-clamp-2">...</h4>
+                        <h4 id="targetName" class="text-sm font-bold leading-tight mb-6 line-clamp-4">...</h4>
                         <div class="space-y-4 flex-1">
                             <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">เกณฑ์ผ่านขั้นต่ำ 6 เดือน</p>
@@ -191,8 +197,8 @@
             { id: "4", name: "4. เด็กอายุ 0 - 5 ปี ฟันดีไม่มีผุ (Cavity Free)", type: "pos" },
             { id: "5", name: "5. ระดับความสำเร็จ GREEN & CLEAN Hospital", type: "score" },
             { id: "6", name: "6. ระดับความสำเร็จการดำเนินงานอาหารปลอดภัย", type: "score" },
-            { id: "7.1", name: "7.1 ร้อยละของผู้ป่วยเบาหวานเข้าร่วม NCDs Remission", type: "pos" },
-            { id: "7.2", name: "7.2 ร้อยละการควบคุมน้ำตาล (HbA1c < 6.5%)", type: "pos" },
+            { id: "7.1", name: "7.1 ร้อยละของผู้ป่วยเบาหวานเข้าร่วม NCDs Remission Clinic", type: "pos" },
+            { id: "7.2", name: "7.2 ร้อยละได้รับการดูแลรักษาจนสามารถควบคุมน้ำตาลในเลือดให้อยู่ในระดับที่ตํ่ากว่าระดับที่ใช้เป็นเกณฑ์การวินิจฉัยโรค (HbA1c < 6.5%) และคงอยู่อย่างน้อย 90 วัน โดยไม่ต้องใช้ยาเพื่อลดระดับน้ำตาลในเลือด", type: "pos" },
             { id: "8", name: "8. ร้อยละของผู้ป่วยยาเสพติดเข้าสู่กระบวนการบำบัดรักษา", type: "pos" },
             { id: "9", name: "9. อัตราความสำเร็จการรักษาผู้ป่วยวัณโรคปอดรายใหม่", type: "pos" },
             { id: "10", name: "10. ร้อยละการคัดกรองวัณโรคโดยการ CXR ในกลุ่มเสี่ยง", type: "pos" },
@@ -249,13 +255,9 @@
             const kFilter = document.getElementById('kpiFilter');
             const uFilter = document.getElementById('unitFilter');
             
-            // ดึงรายชื่อหน่วยงานทั้งหมด
             const uniqueUnits = [...new Set(db.map(d => d.unit))];
-            
-            // กรองหน่วยงานที่เป็น "ภาพรวมอำเภอ" ออกจากการเลือก
             const sortedUnits = uniqueUnits.filter(u => u !== "คปสอ.ควนโดน (ภาพรวมอำเภอ)");
 
-            // เคลียร์ค่าเดิม
             kFilter.innerHTML = "";
             uFilter.innerHTML = "";
 
@@ -265,23 +267,20 @@
             kFilter.onchange = update;
             uFilter.onchange = update;
             
-            // --- ตั้งค่าเริ่มต้นเป็น คปสอ.ควนโดน ---
             const defaultUnit = sortedUnits.find(u => u.includes("คปสอ.ควนโดน")) || sortedUnits[0];
-            if (defaultUnit) {
-                uFilter.value = defaultUnit;
-            }
+            if (defaultUnit) uFilter.value = defaultUnit;
 
             update();
         }
 
         function checkPass(val, g6, g12, type) {
             if (type === 'neg') {
-                if (val <= g12) return 2;
-                if (val <= g6) return 1;
+                if (val <= g12 && g12 > 0) return 2;
+                if (val <= g6 && g6 > 0) return 1;
                 return 0;
             }
-            if (val >= g12) return 2;
-            if (val >= g6) return 1;
+            if (val >= g12 && g12 > 0) return 2;
+            if (val >= g6 && g6 > 0) return 1;
             return 0;
         }
 
@@ -322,7 +321,6 @@
 
         function renderChart(kpiId, kpiDef, selectedUnit, g6, g12) {
             const ctx = document.getElementById('mainChart').getContext('2d');
-            // แสดงผลกราฟเปรียบเทียบทุกหน่วยงาน ยกเว้นภาพรวมอำเภอ
             const dataSet = db.filter(d => d.kpiId === kpiId && d.unit !== "คปสอ.ควนโดน (ภาพรวมอำเภอ)");
             
             if (mainChart) mainChart.destroy();
@@ -332,9 +330,7 @@
                     labels: dataSet.map(d => d.unit.replace("รพ.สต.", "").replace("โรงพยาบาล", "รพ.").trim()),
                     datasets: [{
                         data: dataSet.map(d => d.percentVal),
-                        backgroundColor: dataSet.map(d => {
-                            return d.unit === selectedUnit ? '#f59e0b' : '#0d9488';
-                        }),
+                        backgroundColor: dataSet.map(d => d.unit === selectedUnit ? '#f59e0b' : '#0d9488'),
                         borderRadius: 8,
                         barThickness: 40
                     }]
@@ -388,7 +384,7 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-6 py-4">
                             <div class="text-slate-800 font-bold">${def.name}</div>
-                            <div class="text-[9px] text-slate-400 font-black">ID: ${def.id}</div>
+                            <div class="text-[9px] text-slate-400 font-black uppercase tracking-tight">KPI ID: ${def.id}</div>
                         </td>
                         <td class="px-4 py-4 text-center text-slate-600 font-medium">${row.targetVal}</td>
                         <td class="px-4 py-4 text-center text-teal-700 font-bold">${row.resultVal}</td>
