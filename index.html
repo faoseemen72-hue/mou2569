@@ -24,13 +24,11 @@
         }
         .font-num { font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        /* สไตล์ส่วนหัว */
         .nav-gradient {
             background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
             border-bottom: 5px solid var(--gold-accent);
         }
         
-        /* สไตล์การ์ด */
         .card-main {
             background: #ffffff;
             border-radius: 20px;
@@ -71,7 +69,6 @@
         <p class="text-white font-bold tracking-widest">กำลังดึงข้อมูลเรียลไทม์...</p>
     </div>
 
-    <!-- แถบนำทาง -->
     <nav class="nav-gradient sticky top-0 z-50">
         <div class="max-w-[1440px] mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center">
             <div class="flex items-center gap-4">
@@ -96,7 +93,6 @@
         
         <!-- สรุปผลรวม KPI -->
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- การ์ด 12 เดือน -->
             <div class="card-main p-6 border-l-8 border-emerald-700">
                 <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">เป้าหมายปี (12 ด.)</p>
                 <div class="flex items-end justify-between">
@@ -112,7 +108,6 @@
                 </div>
             </div>
 
-            <!-- การ์ด 6 เดือน -->
             <div class="card-main p-6 border-l-8 border-orange-500">
                 <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">เกณฑ์ขั้นต่ำ (6 ด.)</p>
                 <div class="flex items-end justify-between">
@@ -128,7 +123,6 @@
                 </div>
             </div>
 
-            <!-- การ์ด จำนวนหน่วยงาน -->
             <div class="card-main p-6 border-l-8 border-gold-accent">
                 <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">เครือข่ายบริการ</p>
                 <div class="flex items-end justify-between">
@@ -139,7 +133,6 @@
                 </div>
             </div>
 
-            <!-- การ์ด โหมดแสดงผล -->
             <div class="card-main p-6 bg-emerald-900 border-none shadow-lg shadow-emerald-900/20">
                 <p class="text-[11px] font-black text-emerald-400/60 uppercase tracking-widest mb-1">การแสดงผล</p>
                 <h2 id="activeReportType" class="text-lg font-black text-white mt-1">วิเคราะห์รายตัวชี้วัด</h2>
@@ -225,23 +218,23 @@
         };
 
         const kpiList = [
-            { id: "1", name: "1. หญิงตั้งครรภ์ฝากครรภ์ครั้งแรกภายใน 12 สัปดาห์", type: "pos" },
-            { id: "2", name: "2. เด็กอายุ 12 เดือน มีภาวะโลหิตจาง (Anemia)", type: "neg" },
-            { id: "3", name: "3. เด็กปฐมวัยมีพัฒนาการสมวัย", type: "pos" },
-            { id: "4", name: "4. เด็กอายุ 0 - 5 ปี ฟันดีไม่มีผุ (Cavity Free)", type: "pos" },
-            { id: "5", name: "5. ระดับความสำเร็จ GREEN & CLEAN Hospital", type: "score" },
-            { id: "6", name: "6. ระดับความสำเร็จการดำเนินงานอาหารปลอดภัย", type: "score" },
-            { id: "7.1", name: "7.1 ผู้ป่วยเบาหวานเข้าร่วม NCDs Remission Clinic", type: "pos" },
-            { id: "7.2", name: "7.2 ร้อยละ HbA1c < 6.5% คงอยู่อย่างน้อย 90 วัน", type: "pos" },
-            { id: "8", name: "8. ผู้ป่วยยาเสพติดเข้าสู่กระบวนการบำบัดรักษา", type: "pos" },
-            { id: "9", name: "9. ความสำเร็จการรักษาผู้ป่วยวัณโรคปอดรายใหม่", type: "pos" },
-            { id: "10", name: "10. การคัดกรองวัณโรคโดยการ CXR ในกลุ่มเสี่ยง", type: "pos" },
-            { id: "11", name: "11. หน่วยบริการปฐมภูมิผ่านเกณฑ์มาตรฐาน", type: "pos" },
-            { id: "12", name: "12. อสม. ได้รับการพัฒนายกระดับสู่ผู้ช่วยสาธารณสุข", type: "pos" },
-            { id: "13", name: "13. การให้บริการการแพทย์ทางไกล (Telemedicine)", type: "pos" },
-            { id: "14", name: "14. ความสำเร็จในการขับเคลื่อนงานสุขภาพดิจิทัล", type: "score" },
-            { id: "15", name: "15. มูลค่าการใช้ยาสมุนไพรในสิทธิ UC", type: "pos" },
-            { id: "16", name: "16. การจัดการความรู้ (KM) ในองค์กร", type: "score" }
+            { id: "1", name: "1. ร้อยละของหญิงตั้งครรภ์ฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์", type: "pos" },
+            { id: "2", name: "2. ร้อยละของเด็กอายุ 12 เดือน มีภาวะโลหิตจาง", type: "neg" },
+            { id: "3", name: "3. ร้อยละของเด็กปฐมวัยมีพัฒนาการสมวัย", type: "pos" },
+            { id: "4", name: "4. ร้อยละของเด็กอายุ 0 - 5 ปี ฟันดีไม่มีผุ (Cavity Free)", type: "pos" },
+            { id: "5", name: "5. ระดับความสำเร็จของการดำเนินงาน GREEN & CLEAN Hospital", type: "score" },
+            { id: "6", name: "6. ระดับความสำเร็จของการดำเนินงานอาหารปลอดภัย (CUP Safety Food)", type: "score" },
+            { id: "7.1", name: "7.1 ร้อยละของผู้ป่วยโรคเบาหวานเข้าร่วมกิจกรรม NCDs Remission Clinic", type: "pos" },
+            { id: "7.2", name: "7.2 ร้อยละของผู้ป่วยโรคเบาหวานที่มีระดับ HbA1c < 6.5 % คงอยู่อย่างน้อย 90 วัน", type: "pos" },
+            { id: "8", name: "8. ร้อยละของผู้ป่วยยาเสพติดเข้าสู่กระบวนการบำบัดรักษา", type: "pos" },
+            { id: "9", name: "9. ร้อยละความสำเร็จของการรักษาผู้ป่วยวัณโรคปอดรายใหม่", type: "pos" },
+            { id: "10", name: "10. ร้อยละของการคัดกรองวัณโรคโดยการ CXR ในกลุ่มเสี่ยง", type: "pos" },
+            { id: "11", name: "11. ร้อยละของหน่วยบริการปฐมภูมิผ่านเกณฑ์มาตรฐาน (ติดดาว)", type: "pos" },
+            { id: "12", name: "12. ร้อยละของ อสม. ที่ได้รับการพัฒนายกระดับเป็น อสม. ผู้ช่วยสาธารณสุข", type: "pos" },
+            { id: "13", name: "13. ร้อยละของการให้บริการผ่านระบบการแพทย์ทางไกล (Telemedicine)", type: "pos" },
+            { id: "14", name: "14. ระดับความสำเร็จของการขับเคลื่อนงานสุขภาพดิจิทัล (Smart Hospital)", type: "score" },
+            { id: "15", name: "15. ร้อยละของมูลค่าการใช้ยาสมุนไพรในสิทธิหลักประกันสุขภาพถ้วนหน้า (UC)", type: "pos" },
+            { id: "16", name: "16. ระดับความสำเร็จของการจัดการความรู้ (KM) ในองค์กร", type: "score" }
         ];
 
         let database = [];
@@ -335,7 +328,6 @@
             const perc12 = Math.round((p12/kpiList.length)*100);
             const perc6 = Math.round((p6/kpiList.length)*100);
 
-            // แสดงผลร้อยละ + จำนวน
             document.getElementById('statPass12').innerText = perc12 + "%";
             document.getElementById('countPass12').innerText = `ผ่าน ${p12} จาก ${kpiList.length} ข้อ`;
             document.getElementById('statPass6').innerText = perc6 + "%";
@@ -378,7 +370,7 @@
                         legend: { display: false },
                         datalabels: { 
                             anchor: 'end', align: 'top', 
-                            font: { family: 'Plus Jakarta Sans', weight: '800', size: 12 }, // ลดขนาดตัวเลขบนกราฟ
+                            font: { family: 'Plus Jakarta Sans', weight: '800', size: 11 },
                             color: '#0f172a',
                             formatter: v => v + (def.type === 'score' ? '' : '%')
                         },
@@ -398,10 +390,17 @@
             const body = document.getElementById('tableBody');
             const currUnit = document.getElementById('unitFilter').value;
             const currKpi = document.getElementById('kpiFilter').value;
+            const scoreKPIs = ["5", "6", "14", "16"]; // รายการ KPI ที่ใช้คำว่า "ระดับ"
             body.innerHTML = '';
 
             if (activeView === 'unit') {
-                head.innerHTML = `<th class="px-6 py-4">ตัวชี้วัดความสำเร็จ</th><th class="px-4 py-4 text-center">เป้าหมาย</th><th class="px-4 py-4 text-center">ผลงาน</th><th class="px-4 py-4 text-center">ร้อยละ</th><th class="px-6 py-4 text-right">ผลประเมิน</th>`;
+                head.innerHTML = `
+                    <th class="px-6 py-4">ตัวชี้วัดความสำเร็จ</th>
+                    <th class="px-4 py-4 text-center">เป้าหมาย</th>
+                    <th class="px-4 py-4 text-center">ผลงาน</th>
+                    <th class="px-4 py-4 text-center">ร้อยละ / ระดับ</th>
+                    <th class="px-6 py-4 text-right">ผลประเมิน</th>
+                `;
                 database.filter(d => d.unit === currUnit).forEach(row => {
                     const kDef = kpiList.find(k => k.id === row.kpi);
                     if(!kDef) return;
@@ -419,7 +418,18 @@
                     `;
                 });
             } else {
-                head.innerHTML = `<th class="px-6 py-4">หน่วยบริการ</th><th class="px-4 py-4 text-center">เป้าหมาย</th><th class="px-4 py-4 text-center">ผลงาน</th><th class="px-4 py-4 text-center">ร้อยละ</th><th class="px-6 py-4 text-right">ผลประเมิน</th>`;
+                // สำหรับมุมมองรายตัวชี้วัด เปลี่ยนหัวตารางตาม ID KPI
+                const isScoreType = scoreKPIs.includes(currKpi);
+                const colLabel = isScoreType ? "ระดับ" : "ร้อยละ";
+                
+                head.innerHTML = `
+                    <th class="px-6 py-4">หน่วยบริการ</th>
+                    <th class="px-4 py-4 text-center">เป้าหมาย</th>
+                    <th class="px-4 py-4 text-center">ผลงาน</th>
+                    <th class="px-4 py-4 text-center">${colLabel}</th>
+                    <th class="px-6 py-4 text-right">ผลประเมิน</th>
+                `;
+                
                 const mainKDef = kpiList.find(k => k.id === currKpi);
                 database.filter(d => d.kpi === currKpi).forEach(row => {
                     const res = checkResult(row.percent, row.g6, row.g12, mainKDef.type);
