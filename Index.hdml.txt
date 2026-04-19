@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOU Dashboard 2569 | คปสอ.ควนโดน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --emerald-deep: #064e3b;
+            --emerald-mid: #059669;
+            --gold-accent: #d4af37;
+            --orange-bright: #f97316;
+        }
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .font-num { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .nav-gradient {
+            background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+            border-bottom: 5px solid var(--gold-accent);
+        }
+        
+        .card-main {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+        .card-main:hover { transform: translateY(-2px); }
+
+        .tag-status {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        .bg-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .bg-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .bg-danger { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+        #loader {
+            position: fixed; inset: 0; background: #064e3b; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loader-spin {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(212, 175, 55, 0.1);
+            border-top: 4px solid var(--gold-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="loader">
+        <div class="loader-spin mb-4"></div>
+        <p class="text-white font-bold tracking-widest">กำลังดึงข้อมูลเรียลไทม์...</p>
+    </div>
+
+    <nav class="nav-gradient sticky top-0 z-50">
+        <div class="max-w-[1440px] mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="bg-white/10 p-2 rounded-lg border border-white/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gold-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-white text-2xl font-black uppercase">KPI Dashboard 2569</h1>
+                    <p class="text-emerald-400 text-[11px] font-bold uppercase tracking-widest">คปสอ.ควนโดน | Khuan Don Intelligence</p>
+                </div>
+            </div>
+            <div class="text-right mt-3 md:mt-0">
+                <p class="text-[10px] font-bold text-gold-accent uppercase">อัปเดตล่าสุด (Last Update)</p>
+                <p id="lastUpdate" class="text-lg font-black text-white font-num tracking-wider">--:--:--</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-[1440px] mx-auto px-6 py-8 space-y-8">
+        
+        <!-- สรุปผลรวม KPI -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card-main p-6 border-l-8 border-emerald-700">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">เป้าหมายปี (12 ด.)</p>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <h2 id="statPass12" class="text-4xl font-black text-slate-900 font-num">0%</h2>
+                        <p id="countPass12" class="text-sm font-bold text-emerald-700 mt-1">ผ่าน 0 จาก 17 ข้อ</p>
+                    </div>
+                    <div class="bg-emerald-50 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-main p-6 border-l-8 border-orange-500">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">เกณฑ์ขั้นต่ำ (6 ด.)</p>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <h2 id="statPass6" class="text-4xl font-black text-slate-900 font-num">0%</h2>
+                        <p id="countPass6" class="text-sm font-bold text-orange-600 mt-1">ผ่าน 0 จาก 17 ข้อ</p>
+                    </div>
+                    <div class="bg-orange-50 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-main p-6 border-l-8 border-gold-accent">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-1">เครือข่ายบริการ</p>
+                <div class="flex items-end justify-between">
+                    <div>
+                        <h2 class="text-4xl font-black text-slate-900 font-num">06</h2>
+                        <p class="text-sm font-bold text-slate-500 mt-1">หน่วยบริการ (CUP)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-main p-6 bg-emerald-900 border-none shadow-lg shadow-emerald-900/20">
+                <p class="text-[11px] font-black text-emerald-400/60 uppercase tracking-widest mb-1">การแสดงผล</p>
+                <h2 id="activeReportType" class="text-lg font-black text-white mt-1">วิเคราะห์รายตัวชี้วัด</h2>
+                <div class="mt-4 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-gold-accent rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-black text-gold-accent uppercase">Live Database Connected</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ตัวเลือกตัวกรอง -->
+        <section class="card-main p-8 bg-white border-t-8 border-emerald-900">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-sm font-black text-emerald-900 mb-2 uppercase">ระบุตัวชี้วัดที่ต้องการดู</label>
+                    <select id="kpiFilter" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-4 text-base font-bold text-slate-800 focus:border-gold-accent outline-none appearance-none"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-black text-emerald-900 mb-2 uppercase">ระบุหน่วยงานที่ต้องการดู</label>
+                    <select id="unitFilter" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-4 text-base font-bold text-slate-800 focus:border-gold-accent outline-none appearance-none"></select>
+                </div>
+            </div>
+        </section>
+
+        <!-- กราฟและรายละเอียด -->
+        <section class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div class="xl:col-span-2 card-main p-8">
+                <h3 class="text-xl font-extrabold text-slate-900 border-l-4 border-gold-accent pl-4 mb-8">เปรียบเทียบผลงานรายหน่วยงาน</h3>
+                <div class="h-[400px]">
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card-main p-8 bg-slate-50 border-none flex flex-col justify-between">
+                <div>
+                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-black px-3 py-1 rounded mb-4 inline-block uppercase">KPI Specification</span>
+                    <h4 id="targetName" class="text-xl font-extrabold text-slate-900 leading-tight">กำลังประมวลผล...</h4>
+                </div>
+                
+                <div class="space-y-4 mt-8">
+                    <div class="p-5 bg-white rounded-2xl border-2 border-slate-100">
+                        <p class="text-[11px] font-black text-slate-400 uppercase mb-1">เกณฑ์ผ่านขั้นต่ำ (6 เดือน)</p>
+                        <p class="text-3xl font-black font-num text-orange-600"><span id="target6m">0</span>%</p>
+                    </div>
+                    <div class="p-5 bg-emerald-900 rounded-2xl shadow-xl shadow-emerald-900/10">
+                        <p class="text-[11px] font-black text-emerald-400/70 uppercase mb-1">เป้าหมายปี 2569</p>
+                        <p class="text-3xl font-black font-num text-gold-accent"><span id="target12m">0</span>%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ตารางข้อมูล -->
+        <section class="card-main overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center bg-slate-50/50 gap-4">
+                <h3 class="text-lg font-extrabold text-slate-800 uppercase">รายละเอียดข้อมูลเชิงลึก</h3>
+                <div class="flex bg-slate-200 p-1 rounded-xl">
+                    <button onclick="switchView('kpi')" id="vKpi" class="px-6 py-2 rounded-lg text-xs font-black bg-white text-emerald-900 shadow">รายตัวชี้วัด</button>
+                    <button onclick="switchView('unit')" id="vUnit" class="px-6 py-2 rounded-lg text-xs font-black text-slate-500">รายหน่วยงาน</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr id="tableHead" class="bg-slate-50 text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100"></tr>
+                    </thead>
+                    <tbody id="tableBody" class="text-sm divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-12 py-10 bg-emerald-950 text-center">
+        <p class="text-gold-accent font-black tracking-[0.3em] text-xs uppercase mb-2">Healthcare Performance Intelligence 2026</p>
+        <p class="text-emerald-500/40 text-[10px] font-bold">คปสอ.ควนโดน จังหวัดสตูล • ออกแบบเพื่อประสิทธิภาพสูงสุดในการดูแลประชาชน</p>
+    </footer>
+
+    <script>
+        const SHEETS = {
+            id: '13tpzXFPNaH-86Nkgk-X9AKYB4QF-MkQNDg_IREJEF_8',
+            name: 'Data',
+            get url() { return `https://docs.google.com/spreadsheets/d/${this.id}/gviz/tq?tqx=out:csv&sheet=${this.name}&t=${Date.now()}`; }
+        };
+
+        const kpiList = [
+            { id: "1", name: "1. ร้อยละของหญิงตั้งครรภ์ฝากครรภ์ครั้งแรกก่อนหรือเท่ากับ 12 สัปดาห์", type: "pos" },
+            { id: "2", name: "2. ร้อยละของเด็กอายุ 12 เดือน มีภาวะโลหิตจาง", type: "neg" },
+            { id: "3", name: "3. ร้อยละของเด็กปฐมวัยมีพัฒนาการสมวัย", type: "pos" },
+            { id: "4", name: "4. ร้อยละของเด็กอายุ 0 - 5 ปี ฟันดีไม่มีผุ (Cavity Free)", type: "pos" },
+            { id: "5", name: "5. ระดับความสำเร็จของการดำเนินงาน GREEN & CLEAN Hospital", type: "score" },
+            { id: "6", name: "6. ระดับความสำเร็จของการดำเนินงานอาหารปลอดภัย (CUP Safety Food)", type: "score" },
+            { id: "7.1", name: "7.1 ร้อยละของผู้ป่วยโรคเบาหวานเข้าร่วมกิจกรรม NCDs Remission Clinic", type: "pos" },
+            { id: "7.2", name: "7.2 ร้อยละของผู้ป่วยโรคเบาหวานที่มีระดับ HbA1c < 6.5 % คงอยู่อย่างน้อย 90 วัน", type: "pos" },
+            { id: "8", name: "8. ร้อยละของผู้ป่วยยาเสพติดเข้าสู่กระบวนการบำบัดรักษา", type: "pos" },
+            { id: "9", name: "9. ร้อยละความสำเร็จของการรักษาผู้ป่วยวัณโรคปอดรายใหม่", type: "pos" },
+            { id: "10", name: "10. ร้อยละของการคัดกรองวัณโรคโดยการ CXR ในกลุ่มเสี่ยง", type: "pos" },
+            { id: "11", name: "11. ร้อยละของหน่วยบริการปฐมภูมิผ่านเกณฑ์มาตรฐาน (ติดดาว)", type: "pos" },
+            { id: "12", name: "12. ร้อยละของ อสม. ที่ได้รับการพัฒนายกระดับเป็น อสม. ผู้ช่วยสาธารณสุข", type: "pos" },
+            { id: "13", name: "13. ร้อยละของการให้บริการผ่านระบบการแพทย์ทางไกล (Telemedicine)", type: "pos" },
+            { id: "14", name: "14. ระดับความสำเร็จของการขับเคลื่อนงานสุขภาพดิจิทัล (Smart Hospital)", type: "score" },
+            { id: "15", name: "15. ร้อยละของมูลค่าการใช้ยาสมุนไพรในสิทธิหลักประกันสุขภาพถ้วนหน้า (UC)", type: "pos" },
+            { id: "16", name: "16. ระดับความสำเร็จของการจัดการความรู้ (KM) ในองค์กร", type: "score" }
+        ];
+
+        let database = [];
+        let chartObj = null;
+        let activeView = 'kpi';
+        const SUMMARY_UNIT = "คปสอ.ควนโดน";
+
+        async function startApp() {
+            try {
+                const res = await fetch(SHEETS.url);
+                const text = await res.text();
+                const lines = text.split('\n').slice(1);
+                
+                database = lines.map(line => {
+                    const cells = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    const val = cells.map(c => c.replace(/"/g, '').trim());
+                    let u = val[0];
+                    if (u && (u.includes("คปสอ.ควนโดน") || u.includes("เครือข่าย"))) u = SUMMARY_UNIT;
+                    return { 
+                        unit: u, kpi: String(val[1]), target: val[3] || "0", 
+                        result: val[4] || "0", percent: parseFloat(val[5]) || 0, 
+                        g6: parseFloat(val[6]) || 0, g12: parseFloat(val[7]) || 0 
+                    };
+                }).filter(r => r.unit && r.kpi);
+
+                setupUI();
+                refresh();
+                document.getElementById('loader').style.display = 'none';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function setupUI() {
+            const kF = document.getElementById('kpiFilter');
+            const uF = document.getElementById('unitFilter');
+            const units = [...new Set(database.map(d => d.unit))];
+            const sortedU = [SUMMARY_UNIT, ...units.filter(u => u !== SUMMARY_UNIT).sort()];
+
+            kpiList.forEach(k => kF.add(new Option(k.name, k.id)));
+            sortedU.forEach(u => uF.add(new Option(u, u)));
+            kF.onchange = refresh;
+            uF.onchange = refresh;
+            uF.value = SUMMARY_UNIT;
+        }
+
+        function checkResult(val, g6, g12, type) {
+            if (type === 'neg') {
+                if (val <= g12 && g12 > 0) return 2;
+                if (val <= g6 && g6 > 0) return 1;
+                return 0;
+            }
+            if (val >= g12 && g12 > 0) return 2;
+            if (val >= g6 && g6 > 0) return 1;
+            return 0;
+        }
+
+        function switchView(v) {
+            activeView = v;
+            const vk = document.getElementById('vKpi');
+            const vu = document.getElementById('vUnit');
+            if (v === 'unit') {
+                vu.className = "px-6 py-2 rounded-lg text-xs font-black bg-white text-emerald-900 shadow";
+                vk.className = "px-6 py-2 rounded-lg text-xs font-black text-slate-500";
+                document.getElementById('activeReportType').innerText = "วิเคราะห์รายหน่วยงาน";
+            } else {
+                vk.className = "px-6 py-2 rounded-lg text-xs font-black bg-white text-emerald-900 shadow";
+                vu.className = "px-6 py-2 rounded-lg text-xs font-black text-slate-500";
+                document.getElementById('activeReportType').innerText = "วิเคราะห์รายตัวชี้วัด";
+            }
+            refresh();
+        }
+
+        function refresh() {
+            const kId = document.getElementById('kpiFilter').value;
+            const unit = document.getElementById('unitFilter').value;
+            const def = kpiList.find(k => k.id === kId);
+            const unitRows = database.filter(d => d.unit === unit);
+            
+            let p6 = 0, p12 = 0;
+            unitRows.forEach(row => {
+                const kDef = kpiList.find(k => k.id === row.kpi);
+                if (kDef) {
+                    const res = checkResult(row.percent, row.g6, row.g12, kDef.type);
+                    if (res >= 2) p12++;
+                    if (res >= 1) p6++;
+                }
+            });
+
+            const curr = database.find(d => d.kpi === kId && d.unit === unit) || { g6:0, g12:0 };
+            const perc12 = Math.round((p12/kpiList.length)*100);
+            const perc6 = Math.round((p6/kpiList.length)*100);
+
+            document.getElementById('statPass12').innerText = perc12 + "%";
+            document.getElementById('countPass12').innerText = `ผ่าน ${p12} จาก ${kpiList.length} ข้อ`;
+            document.getElementById('statPass6').innerText = perc6 + "%";
+            document.getElementById('countPass6').innerText = `ผ่าน ${p6} จาก ${kpiList.length} ข้อ`;
+            
+            document.getElementById('targetName').innerText = def.name;
+            document.getElementById('target6m').innerText = curr.g6;
+            document.getElementById('target12m').innerText = curr.g12;
+            
+            drawChart(kId, def, unit, curr.g6, curr.g12);
+            drawTable();
+            document.getElementById('lastUpdate').innerText = new Date().toLocaleTimeString('th-TH');
+        }
+
+        function drawChart(kId, def, selectedU, g6, g12) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            const dataSet = database.filter(d => d.kpi === kId);
+            if (chartObj) chartObj.destroy();
+            
+            chartObj = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dataSet.map(d => d.unit.replace("โรงพยาบาลส่งเสริมสุขภาพตำบล", "รพ.สต.")),
+                    datasets: [{
+                        data: dataSet.map(d => d.percent),
+                        backgroundColor: dataSet.map(d => d.unit === selectedU ? '#f97316' : '#059669'),
+                        borderRadius: 10,
+                        barPercentage: 0.55
+                    }]
+                },
+                plugins: [ChartDataLabels, window['chartjs-plugin-annotation']],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grace: '20%', ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold', size: 12 } } },
+                        x: { ticks: { font: { family: 'Sarabun', weight: '700', size: 12 }, color: '#334155' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { 
+                            anchor: 'end', align: 'top', 
+                            font: { family: 'Plus Jakarta Sans', weight: '800', size: 11 },
+                            color: '#0f172a',
+                            formatter: v => v + (def.type === 'score' ? '' : '%')
+                        },
+                        annotation: {
+                            annotations: {
+                                l6: { type: 'line', yMin: g6, yMax: g6, borderColor: '#f97316', borderDash: [6, 4], borderWidth: 3 },
+                                l12: { type: 'line', yMin: g12, yMax: g12, borderColor: '#064e3b', borderWidth: 3 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function drawTable() {
+            const head = document.getElementById('tableHead');
+            const body = document.getElementById('tableBody');
+            const currUnit = document.getElementById('unitFilter').value;
+            const currKpi = document.getElementById('kpiFilter').value;
+            const scoreKPIs = ["5", "6", "14", "16"]; // รายการ KPI ที่ใช้คำว่า "ระดับ"
+            body.innerHTML = '';
+
+            if (activeView === 'unit') {
+                head.innerHTML = `
+                    <th class="px-6 py-4">ตัวชี้วัดความสำเร็จ</th>
+                    <th class="px-4 py-4 text-center">เป้าหมาย</th>
+                    <th class="px-4 py-4 text-center">ผลงาน</th>
+                    <th class="px-4 py-4 text-center">ร้อยละ / ระดับ</th>
+                    <th class="px-6 py-4 text-right">ผลประเมิน</th>
+                `;
+                database.filter(d => d.unit === currUnit).forEach(row => {
+                    const kDef = kpiList.find(k => k.id === row.kpi);
+                    if(!kDef) return;
+                    const res = checkResult(row.percent, row.g6, row.g12, kDef.type);
+                    const label = res === 2 ? 'บรรลุเป้าปี' : (res === 1 ? 'ผ่านเกณฑ์ 6ด.' : 'ยังไม่ผ่าน');
+                    const cls = res === 2 ? 'bg-success' : (res === 1 ? 'bg-warning' : 'bg-danger');
+                    body.innerHTML += `
+                        <tr class="${kDef.id === currKpi ? 'bg-amber-50' : ''} hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-6 font-extrabold text-slate-800">${kDef.name}</td>
+                            <td class="px-4 py-6 text-center text-slate-400 font-num font-bold">${row.target}</td>
+                            <td class="px-4 py-6 text-center text-slate-800 font-num font-extrabold">${row.result}</td>
+                            <td class="px-4 py-6 text-center text-emerald-700 font-num font-black text-lg">${row.percent}${kDef.type === 'score' ? '' : '%'}</td>
+                            <td class="px-6 py-6 text-right"><span class="tag-status ${cls}">${label}</span></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                // สำหรับมุมมองรายตัวชี้วัด เปลี่ยนหัวตารางตาม ID KPI
+                const isScoreType = scoreKPIs.includes(currKpi);
+                const colLabel = isScoreType ? "ระดับ" : "ร้อยละ";
+                
+                head.innerHTML = `
+                    <th class="px-6 py-4">หน่วยบริการ</th>
+                    <th class="px-4 py-4 text-center">เป้าหมาย</th>
+                    <th class="px-4 py-4 text-center">ผลงาน</th>
+                    <th class="px-4 py-4 text-center">${colLabel}</th>
+                    <th class="px-6 py-4 text-right">ผลประเมิน</th>
+                `;
+                
+                const mainKDef = kpiList.find(k => k.id === currKpi);
+                database.filter(d => d.kpi === currKpi).forEach(row => {
+                    const res = checkResult(row.percent, row.g6, row.g12, mainKDef.type);
+                    const label = res === 2 ? 'บรรลุเป้าปี' : (res === 1 ? 'ผ่านเกณฑ์ 6ด.' : 'ยังไม่ผ่าน');
+                    const cls = res === 2 ? 'bg-success' : (res === 1 ? 'bg-warning' : 'bg-danger');
+                    const isSum = row.unit === SUMMARY_UNIT;
+                    body.innerHTML += `
+                        <tr class="${row.unit === currUnit ? 'bg-amber-50' : ''} ${isSum ? 'bg-emerald-50/50' : ''} hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-6 font-extrabold ${isSum ? 'text-emerald-900' : 'text-slate-800'}">${isSum ? '🏠 ' + row.unit : row.unit}</td>
+                            <td class="px-4 py-6 text-center text-slate-400 font-num font-bold">${row.target}</td>
+                            <td class="px-4 py-6 text-center text-slate-800 font-num font-extrabold">${row.result}</td>
+                            <td class="px-4 py-6 text-center text-emerald-700 font-num font-black text-lg">${row.percent}${mainKDef.type === 'score' ? '' : '%'}</td>
+                            <td class="px-6 py-6 text-right"><span class="tag-status ${cls}">${label}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        window.onload = startApp;
+    </script>
+</body>
+</html>
